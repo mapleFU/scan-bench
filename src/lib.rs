@@ -11,6 +11,11 @@ extern crate serde;
 
 extern crate sys_info;
 
+extern crate hex;
+
+#[macro_use]
+extern crate slog;
+
 mod db_opts;
 mod tikv_code;
 
