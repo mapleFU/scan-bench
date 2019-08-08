@@ -88,7 +88,8 @@ impl Scanner {
         let cloned_ref = db_ref.clone();
 
         let snap = Snapshot::new(cloned_ref.clone());
-        let read_write_opts = build_read_opts(cfg.lower_bound.clone(), cfg.upper_bound.clone());
+        let mut read_write_opts = build_read_opts(cfg.lower_bound.clone(), cfg.upper_bound.clone());
+//        read_write_opts.fill_cache(true);
 
         let mut iter_write = DBIterator::new_cf(
             cloned_ref.clone(),
@@ -97,7 +98,9 @@ impl Scanner {
         );
         iter_write.seek(SeekKey::Key(&cfg.lower_bound));
 
-        let read_default_opts = build_read_opts(cfg.lower_bound.clone(), cfg.upper_bound.clone());
+        let mut read_default_opts = ReadOptions::new();
+//        read_default_opts.fill_cache(true);
+
         let mut iter_default = DBIterator::new_cf(
             cloned_ref.clone(),
             db_ref.cf_handle(CF_DEFAULT).unwrap(),
@@ -116,7 +119,6 @@ impl Scanner {
 }
 
 fn forward_scan(mut scanner: Scanner, loop_cnt: u64) {
-    let mut record = 0;
     for _ in 0..loop_cnt {
         if !scanner.iter_write.next() {
             break;
@@ -127,18 +129,13 @@ fn forward_scan(mut scanner: Scanner, loop_cnt: u64) {
         if !scanner.iter_default.next() {
             break;
         }
-        record = record + 1;
         black_box((scanner.iter_default.key(), scanner.iter_default.value()));
     }
-    println!("forward-scan {}", record);
 }
 
 fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) {
-    let mut record = 0;
-    let outer_loop = loop_cnt / batch_size;
-    let other_loop = loop_cnt % batch_size;
 
-    for _ in 0..outer_loop {
+    for _ in 0..(loop_cnt as f64 / batch_size as f64).ceil() as u64 {
         for _ in 0..batch_size {
             if !scanner.iter_write.next() {
                 break;
@@ -148,28 +145,11 @@ fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) {
 
         for _ in 0..batch_size {
             if !scanner.iter_default.next() {
-                println!("forward-batch-scan {}", record);
                 return;
             }
-            record += 1;
             black_box((scanner.iter_default.key(), scanner.iter_default.value()));
         }
     }
-    for _ in 0..other_loop {
-        if !scanner.iter_write.next() {
-            break;
-        }
-        black_box((scanner.iter_write.key(), scanner.iter_write.value()));
-    }
-
-    for _ in 0..other_loop {
-        if !scanner.iter_default.next() {
-            return;
-        }
-        record += 1;
-        black_box((scanner.iter_default.key(), scanner.iter_default.value()));
-    }
-    println!("forward-batch-scan {}", record);
 }
 
 fn bench_scan(c: &mut Criterion) {
@@ -232,19 +212,19 @@ fn bench_scan(c: &mut Criterion) {
             //                common_cfg,
             //            );
 
-//            c.bench_function(
-//                &format!(
-//                    "forward_scan(rocks db data size {}, value length {})",
-//                    rocks_size, vl
-//                ),
-//                move |b| {
-//                    b.iter_batched(
-//                        || (Scanner::new(cur_db.clone(), cfg.clone())),
-//                        |scanner| forward_scan(scanner, rocks_size / 2),
-//                        batch_size,
-//                    )
-//                },
-//            );
+            let mut c = c.bench_function(
+                &format!(
+                    "forward_scan(rocks db data size {}, value length {})",
+                    rocks_size, vl
+                ),
+                move |b| {
+                    b.iter_batched(
+                        || (Scanner::new(cur_db.clone(), cfg.clone())),
+                        |scanner| forward_scan(scanner, rocks_size / 2),
+                        batch_size,
+                    )
+                },
+            );
 
             let scan_batch_size = vec![128];
 
