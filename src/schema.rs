@@ -15,7 +15,6 @@ pub const SEP_LEN: usize = 2;
 pub const TABLE_PREFIX_LEN: usize = 1;
 pub const TABLE_PREFIX_KEY_LEN: usize = TABLE_PREFIX_LEN + ID_LEN;
 
-
 /// `TableEncoder` encodes the table record/index prefix.
 trait TableEncoder: NumberEncoder {
     fn append_table_record_prefix(&mut self, table_id: i64) {
@@ -37,10 +36,7 @@ impl<T: Write> TableEncoder for T {}
 #[inline]
 pub fn extract_table_prefix(key: &[u8]) -> &[u8] {
     if !key.starts_with(TABLE_PREFIX) || key.len() < TABLE_PREFIX_KEY_LEN {
-        panic!(
-            "record key or index key expected, but got {:?}",
-            key
-        )
+        panic!("record key or index key expected, but got {:?}", key)
     } else {
         &key[..TABLE_PREFIX_KEY_LEN]
     }
@@ -62,4 +58,38 @@ pub fn encode_column_key(table_id: i64, handle: i64, column_id: i64) -> Vec<u8> 
     key.encode_i64(handle).unwrap();
     key.encode_i64(column_id).unwrap();
     key
+}
+
+/// 为 write 字段生成数据
+#[derive(PartialEq, Clone)]
+pub struct WriteFiled {
+    pub write_type: WriteType,
+    pub start_ts: u64,
+    pub short_value: Option<Vec<u8>>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum WriteType {
+    Put,
+    Delete,
+    Lock,
+    Rollback,
+}
+
+#[inline]
+fn repeat_vec(repeat_count: usize) -> Vec<u8> {
+    [0].repeat(repeat_count)
+}
+
+pub fn generate_write_value() -> Vec<u8> {
+    use std::mem;
+
+    let sz = mem::size_of::<self::WriteFiled>();
+
+    repeat_vec(sz)
+}
+
+/// 为 default 字段生成数据 (data_size )
+pub fn generate_default_value(data_size: u64) -> Vec<u8> {
+    repeat_vec(data_size as usize)
 }

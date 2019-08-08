@@ -1,11 +1,11 @@
+use crate::tikv_code::bytes;
+use crate::tikv_code::bytes::*;
+use crate::tikv_code::number::{self, NumberEncoder};
+use byteorder::{ByteOrder, NativeEndian};
+use hex::ToHex;
+use std::fmt;
 use std::fmt::Display;
 use std::fmt::Formatter;
-use crate::tikv_code::number::{self, NumberEncoder};
-use crate::tikv_code::bytes::*;
-use byteorder::{ByteOrder, NativeEndian};
-use std::fmt;
-use hex::ToHex;
-use crate::tikv_code::bytes;
 
 /// Key type.
 ///
@@ -19,8 +19,6 @@ use crate::tikv_code::bytes;
 /// consistently.
 #[derive(Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Key(Vec<u8>);
-
-
 
 /// Core functions for `Key`.
 impl Key {
@@ -104,7 +102,7 @@ impl Key {
     #[inline]
     pub fn split_on_ts_for(key: &[u8]) -> (&[u8], u64) {
         if key.len() < number::U64_SIZE {
-//            Err(codec::Error::KeyLength)
+            //            Err(codec::Error::KeyLength)
             panic!("反正有问题");
         } else {
             let pos = key.len() - number::U64_SIZE;

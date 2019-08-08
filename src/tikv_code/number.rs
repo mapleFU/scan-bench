@@ -47,7 +47,6 @@ impl Error {
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-
 const SIGN_MARK: u64 = 0x8000000000000000;
 pub const MAX_VAR_I64_LEN: usize = 10;
 pub const MAX_VAR_U64_LEN: usize = 10;
@@ -187,8 +186,8 @@ impl<T: Write> NumberEncoder for T {}
 
 #[inline]
 fn read_num_bytes<T, F>(size: usize, data: &mut &[u8], f: F) -> Result<T>
-    where
-        F: Fn(&[u8]) -> T,
+where
+    F: Fn(&[u8]) -> T,
 {
     if data.len() >= size {
         let buf = &data[..size];

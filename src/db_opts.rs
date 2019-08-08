@@ -10,7 +10,7 @@ use rocksdb::DBCompactionStyle;
 use rocksdb::DBCompressionType;
 use rocksdb::DBRecoveryMode;
 use rocksdb::LRUCacheOptions;
-use rocksdb::{self, ColumnFamilyOptions, DBOptions};
+use rocksdb::{self, ColumnFamilyOptions, DBOptions, ReadOptions};
 
 const RAFT_MIN_MEM: usize = 256 * MB as usize;
 const RAFT_MAX_MEM: usize = 2 * GB as usize;
@@ -226,4 +226,17 @@ pub fn default_wcf_config() -> ColumnFamilyOptions {
     //    cf_opts.add_table_properties_collector_factory("tikv.range-properties-collector", f);
 
     cf_opts
+}
+
+pub fn build_read_opts(lower_bound: Vec<u8>, upper_bound: Vec<u8>) -> ReadOptions {
+    let mut opts = ReadOptions::new();
+    opts.set_total_order_seek(true);
+
+    opts.set_iterate_lower_bound(lower_bound);
+    opts.set_iterate_upper_bound(upper_bound);
+    opts
+}
+
+pub fn build_iter_opt() {
+    unimplemented!()
 }

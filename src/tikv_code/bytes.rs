@@ -6,9 +6,9 @@ use quick_error;
 use std::io::{BufRead, Write};
 
 use crate::tikv_code::number::{self, NumberEncoder};
-use std::ptr;
 use std::io;
 use std::io::ErrorKind;
+use std::ptr;
 
 const ENC_GROUP_SIZE: usize = 8;
 const ENC_MARKER: u8 = b'\xff';
