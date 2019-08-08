@@ -4,7 +4,7 @@ extern crate criterion;
 extern crate nacs;
 
 use criterion::black_box;
-use criterion::Criterion;
+use criterion::{Criterion, BatchSize, ParameterizedBenchmark};
 
 use std::sync::Arc;
 
@@ -15,7 +15,6 @@ use rocksdb::rocksdb::{DBIterator, Snapshot, Writable};
 #[allow(unused)]
 use rocksdb::{ReadOptions, SeekKey, WriteBatch, WriteOptions, DB};
 
-use criterion::BatchSize;
 use nacs::{
     build_read_opts, default_test_db_with_path, drain_data, ValueType, CF_DEFAULT, CF_WRITE,
 };
@@ -42,7 +41,6 @@ struct ScannerConfig {
     lower_bound: Vec<u8>,
     upper_bound: Vec<u8>,
 }
-
 
 impl ScannerConfig {
     fn new(lower_bound: Option<Vec<u8>>, upper_bound: Option<Vec<u8>>) -> ScannerConfig {
@@ -111,46 +109,34 @@ impl Scanner {
             cfg,
         }
     }
-
-    #[inline]
-    fn in_end(&self) -> bool {
-        return !self.iter_write.valid()
-            || !self.iter_default.valid()
-            || self.iter_write.value() >= self.cfg.upper_bound.as_slice();
-    }
 }
 
-fn forward_scan(mut scanner: Scanner) {
-    loop {
-        if !scanner.iter_write.next()
-        {
+fn forward_scan(mut scanner: Scanner, loop_cnt: u64) {
+    for _ in 0..loop_cnt {
+        if !scanner.iter_write.next() {
             return;
         }
         black_box((scanner.iter_write.key(), scanner.iter_write.value()));
 
         // read
-        if !scanner.iter_default.next()
-        {
+        if !scanner.iter_default.next() {
             return;
         }
         black_box((scanner.iter_default.key(), scanner.iter_default.value()));
     }
 }
 
-fn forward_batch_scan(mut scanner: Scanner, batch_size: u64) {
-    loop {
+fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) {
+    for _ in 0..(loop_cnt as f64 / batch_size as f64).ceil() as u64{
         for _ in 0..batch_size {
-           ;
-            if !scanner.iter_write.next()
-            {
+            if !scanner.iter_write.next() {
                 return;
             }
             black_box((scanner.iter_write.key(), scanner.iter_write.value()));
         }
 
         for _ in 0..batch_size {
-            if !scanner.iter_default.next()
-            {
+            if !scanner.iter_default.next() {
                 return;
             }
             black_box((scanner.iter_default.key(), scanner.iter_default.value()));
@@ -166,19 +152,19 @@ fn bench_scan(c: &mut Criterion) {
     );
     //    let common_cfg = ScannerConfig::default();
 
-//    let test_rocks_size = vec![10000, 50000, 100000];
-    let test_rocks_size = vec![10000, 50000];
+    let test_rocks_size: Vec<u64> = vec![10000, 50000];
     let allow_values = vec![
         ValueType::MiddleValue,
         ValueType::LongValue,
         ValueType::LongLongValue,
     ];
-    for rocks_size in test_rocks_size.iter() {
+
+    for rocks_size in test_rocks_size {
         for defaultcf_value_length in &allow_values {
             let temp_dir = tempdir::TempDir::new_in("data", "data").unwrap();
 
             let mut db = default_test_db_with_path(temp_dir.path());
-            drain_data(&mut db, *rocks_size as u64, defaultcf_value_length.clone());
+            drain_data(&mut db, rocks_size, defaultcf_value_length.clone());
             let db = Arc::new(db);
 
             let cur_db = db.clone();
@@ -186,6 +172,7 @@ fn bench_scan(c: &mut Criterion) {
             let batch_size = BatchSize::SmallInput;
 
             let vl = defaultcf_value_length.value();
+
             c.bench_function(
                 &format!(
                     "forward_scan(rocks db data size {}, value length {})",
@@ -194,29 +181,31 @@ fn bench_scan(c: &mut Criterion) {
                 move |b| {
                     b.iter_batched(
                         || (Scanner::new(cur_db.clone(), cfg.clone())),
-                        |scanner| forward_scan(black_box(scanner)),
+                        |scanner| forward_scan(black_box(scanner), rocks_size / 2),
                         batch_size,
                     )
                 },
             );
 
-            let scan_batch_size = vec![64, 128, 256];
+            let scan_batch_size = vec![128];
 
             let cur_db = db.clone();
             let cfg = common_cfg.clone();
 
-            c.bench_function_over_inputs(&format!(
-                "forward_batch_scan(rocks db data size {}, value length {})",
-                rocks_size, vl
-            ), move |b, &cnt| {
-                b.iter_batched(
-                    || Scanner::new(cur_db.clone(), cfg.clone()),
-                    |scanner| forward_batch_scan(scanner, black_box(cnt)),
-                    batch_size,
-                )
-            }, scan_batch_size);
-
-            drop(temp_dir);
+            c.bench_function_over_inputs(
+                &format!(
+                    "forward_batch_scan(rocks db data size {}, value length {})",
+                    rocks_size, vl
+                ),
+                move |b, &cnt| {
+                    b.iter_batched(
+                        || Scanner::new(cur_db.clone(), cfg.clone()),
+                        |scanner| forward_batch_scan(scanner, black_box(cnt), rocks_size / 2),
+                        batch_size,
+                    )
+                },
+                scan_batch_size,
+            );
         }
     }
 }
