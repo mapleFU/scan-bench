@@ -181,8 +181,6 @@ fn bench_scan(c: &mut Criterion) {
 
             let vl = defaultcf_value_length.value();
 
-            let scan_batch_size = vec![128];
-
             //            let base_line = Fun::new("non-batch", move |b: &mut Bencher, cfg: &ScannerConfig| {
             //                b.iter_batched(
             //                    || (Scanner::new(cur_db.clone(), cfg.clone())),
@@ -226,7 +224,7 @@ fn bench_scan(c: &mut Criterion) {
                 },
             );
 
-            let scan_batch_size = vec![128];
+            let scan_batch_size = vec![32, 64, 128, 256];
 
             let cur_db = db.clone();
             let cfg = common_cfg.clone();
