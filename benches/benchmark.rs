@@ -135,7 +135,7 @@ fn forward_scan(mut scanner: Scanner, loop_cnt: u64) {
 
 fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) {
 
-    for _ in 0..(loop_cnt as f64 / batch_size as f64).ceil() as u64 {
+    for _ in 0..loop_cnt / batch_size {
         for _ in 0..batch_size {
             if !scanner.iter_write.next() {
                 break;
@@ -149,6 +149,20 @@ fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) {
             }
             black_box((scanner.iter_default.key(), scanner.iter_default.value()));
         }
+    }
+
+    for _ in 0..loop_cnt % batch_size {
+        if !scanner.iter_write.next() {
+            break;
+        }
+        black_box((scanner.iter_write.key(), scanner.iter_write.value()));
+    }
+
+    for _ in 0..loop_cnt % batch_size {
+        if !scanner.iter_default.next() {
+            return;
+        }
+        black_box((scanner.iter_default.key(), scanner.iter_default.value()));
     }
 }
 
