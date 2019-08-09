@@ -220,7 +220,7 @@ fn bench_scan(c: &mut Criterion) {
                 move |b| {
                     b.iter_batched(
                         || (Scanner::new(cur_db.clone(), cfg.clone())),
-                        |scanner| forward_scan(scanner, rocks_size / 2),
+                        |scanner| forward_scan(scanner, black_box(rocks_size / 2)),
                         batch_size,
                     )
                 },
@@ -239,7 +239,7 @@ fn bench_scan(c: &mut Criterion) {
                 move |b, &cnt| {
                     b.iter_batched(
                         || Scanner::new(cur_db.clone(), cfg.clone()),
-                        |scanner| forward_batch_scan(scanner, black_box(cnt), rocks_size / 2),
+                        |scanner| forward_batch_scan(scanner, black_box(cnt), black_box(rocks_size / 2)),
                         batch_size,
                     )
                 },
