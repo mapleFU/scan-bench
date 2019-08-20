@@ -136,7 +136,7 @@ fn bench_scan() {
                 let scanner_forward = Scanner::new(cur_db.clone(), cfg.clone());
                 // TODO: should bench on this
                 let name = scanner_forward_batch_name.clone() + &format!("_{}", sbc) + &profile_end;
-                println!("start_task name {}", scanner_forward_name);
+                println!("start_task name {}", name);
                 profiler::start(&name);
                 forward_batch_scan(scanner_forward, black_box(sbc), black_box(rocks_size / 2));
                 profiler::stop();
