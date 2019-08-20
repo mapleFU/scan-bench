@@ -87,7 +87,7 @@ fn bench_scan() {
     );
 
     //    let common_cfg = ScannerConfig::default();
-    let test_rocks_size: Vec<u64> = vec![500000];
+    let test_rocks_size: Vec<u64> = vec![20000, 50000, 100000, 200000, 500000, 1000000];
     let allow_values = vec![
         ValueType::MiddleValue,
         ValueType::LongValue,
@@ -119,12 +119,14 @@ fn bench_scan() {
 
             let scan_batch_size = vec![64, 256, 1024];
 
-            let scale = format!("(rocks db data size {}, value length {})", rocks_size, vl);
+            let scale = format!("_{}_{}_", rocks_size, vl);
 
             let scanner_forward_name = format!("forward_scan") + &scale;
             let scanner_forward_batch_name = format!("forward_scan_batch") + &scale;
 
             let scanner_forward = Scanner::new(cur_db.clone(), cfg.clone());
+            println!("start_task: {}", scanner_forward_name);
+
             profiler::start(&scanner_forward_name);
             forward_scan(scanner_forward, black_box(rocks_size / 2));
             profiler::stop();
@@ -133,7 +135,8 @@ fn bench_scan() {
             for sbc in scan_batch_size {
                 let scanner_forward = Scanner::new(cur_db.clone(), cfg.clone());
                 // TODO: should bench on this
-                let name = scanner_forward_batch_name.clone() + &format!("/{}", sbc);
+                let name = scanner_forward_batch_name.clone() + &format!("_{}", sbc);
+                println!("start_task name {}", scanner_forward_name);
                 profiler::start(&name);
                 forward_batch_scan(scanner_forward, black_box(sbc), black_box(rocks_size / 2));
                 profiler::stop();
