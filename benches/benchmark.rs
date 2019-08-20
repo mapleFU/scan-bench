@@ -24,7 +24,7 @@ use nacs::{
 macro_rules! black_box_kv {
     ($name:expr) => {
         {
-            ($name.key(), $name.value())
+            black_box(($name.key(), $name.value()))
         }
     };
 }
@@ -40,15 +40,11 @@ macro_rules! cursor_next_ok {
 pub fn forward_scan(mut scanner: Scanner, loop_cnt: u64) {
     for _ in 0..loop_cnt {
         // fetch next for "write" field
-        if cursor_next_ok!(scanner.iter_write) {
-            break;
-        }
+        cursor_next_ok!(scanner.iter_write);
         black_box_kv!(scanner.iter_write);
 
         // fetch next for "default" field
-        if cursor_next_ok!(scanner.iter_default) {
-            break;
-        }
+        cursor_next_ok!(scanner.iter_default);
         black_box_kv!(scanner.iter_default);
     }
 }
@@ -56,31 +52,24 @@ pub fn forward_scan(mut scanner: Scanner, loop_cnt: u64) {
 pub fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) {
     for _ in 0..loop_cnt / batch_size {
         for _ in 0..batch_size {
-            if cursor_next_ok!(scanner.iter_write) {
-                break;
-            }
+            cursor_next_ok!(scanner.iter_write);
             black_box_kv!(scanner.iter_write);
         }
 
         for _ in 0..batch_size {
-            if cursor_next_ok!(scanner.iter_default) {
-                return;
-            }
+            cursor_next_ok!(scanner.iter_default);
             black_box_kv!(scanner.iter_default);
         }
     }
 
-    for _ in 0..loop_cnt % batch_size {
-        if cursor_next_ok!(scanner.iter_write) {
-            break;
-        }
+    let sz = loop_cnt % batch_size;
+    for _ in 0..sz {
+        cursor_next_ok!(scanner.iter_write);
         black_box_kv!(scanner.iter_write);
     }
 
-    for _ in 0..loop_cnt % batch_size {
-        if cursor_next_ok!(scanner.iter_default) {
-            break;
-        }
+    for _ in 0..sz {
+        cursor_next_ok!(scanner.iter_default);
         black_box_kv!(scanner.iter_default);
     }
 }
@@ -93,7 +82,7 @@ fn bench_scan(c: &mut Criterion) {
     );
 
     //    let common_cfg = ScannerConfig::default();
-    let test_rocks_size: Vec<u64> = vec![20000];
+    let test_rocks_size: Vec<u64> = vec![20000, 100000, 500000];
     let allow_values = vec![
         ValueType::MiddleValue,
         ValueType::LongValue,
@@ -113,12 +102,14 @@ fn bench_scan(c: &mut Criterion) {
             let batch_size = BatchSize::SmallInput;
 
             // 预热
-            for _ in 0..10 {
+            println!("预热开始");
+            for _ in 0..50 {
                 let scanner = Scanner::new(cur_db.clone(), common_cfg.clone());
                 forward_scan(scanner, 10000);
                 let scanner = Scanner::new(cur_db.clone(), common_cfg.clone());
                 forward_batch_scan(scanner, 128, 10000);
             }
+            println!("预热完毕");
 
             let vl = defaultcf_value_length.value();
 
@@ -136,7 +127,7 @@ fn bench_scan(c: &mut Criterion) {
                 },
             );
 
-            let scan_batch_size = vec![32, 64, 128, 256];
+            let scan_batch_size = vec![64, 128, 256];
 
             let cur_db = db.clone();
             let cfg = common_cfg.clone();

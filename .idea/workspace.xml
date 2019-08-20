@@ -10,13 +10,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f0f2e662-9279-40ba-8796-a4e55a5cdfd9" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/bin/profile.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/profiler/Cargo.toml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/profiler/examples/prime.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/profiler/prime.profile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/profiler/src/lib.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/profiler/src/profiler_dummy.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/profiler/src/profiler_unix.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/nacs.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/nacs.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/benches/benchmark.rs" beforeDir="false" afterPath="$PROJECT_DIR$/benches/benchmark.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/db_opts.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/db_opts.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/bin/profile.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/bin/profile.rs" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -52,8 +57,8 @@
           <entry key="html" value="7" />
           <entry key="json" value="1" />
           <entry key="lock" value="4" />
-          <entry key="rs" value="74" />
-          <entry key="toml" value="13" />
+          <entry key="rs" value="77" />
+          <entry key="toml" value="14" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
@@ -61,33 +66,46 @@
           <entry key="HTML" value="7" />
           <entry key="JSON" value="1" />
           <entry key="PLAIN_TEXT" value="14" />
-          <entry key="Rust" value="74" />
-          <entry key="TOML" value="17" />
+          <entry key="Rust" value="77" />
+          <entry key="TOML" value="18" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="gitignore" value="7" />
-          <entry key="rs" value="5249" />
-          <entry key="toml" value="33" />
+          <entry key="rs" value="5836" />
+          <entry key="toml" value="80" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="7" />
-          <entry key="Rust" value="5249" />
-          <entry key="TOML" value="33" />
+          <entry key="Rust" value="5836" />
+          <entry key="TOML" value="80" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/benches/benchmark.rs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="222">
-              <caret line="42" column="8" selection-start-line="42" selection-start-column="8" selection-end-line="42" selection-end-column="11" />
+            <state relative-caret-position="267">
+              <caret line="136" column="79" selection-start-line="136" selection-start-column="39" selection-end-line="136" selection-end-column="79" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/bin/profile.rs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="473">
+              <caret line="136" column="37" selection-start-line="136" selection-start-column="37" selection-end-line="136" selection-end-column="37" />
+              <folding>
+                <element signature="e#3258#3259#0" expanded="true" />
+                <element signature="e#3277#3278#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -124,62 +142,31 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/bin/profile.rs">
+        <entry file="file://$PROJECT_DIR$/components/profiler/src/lib.rs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="152">
-              <caret line="8" column="18" selection-start-line="8" selection-start-column="18" selection-end-line="8" selection-end-column="18" />
+            <state relative-caret-position="855">
+              <caret line="45" column="6" selection-start-line="45" selection-start-column="6" selection-end-line="45" selection-end-column="6" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
+        <entry file="file://$PROJECT_DIR$/components/profiler/src/profiler_dummy.rs">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/components/profiler/src/profiler_unix.rs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="57">
-              <caret line="3" column="6" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
-            </state>
+            <state relative-caret-position="-570" />
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/.cargo/git/checkouts/rust-rocksdb-82ef6e5337b3fbe6/9d433ea/src/rocksdb.rs">
+        <entry file="file://$PROJECT_DIR$/components/profiler/Cargo.toml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4104">
-              <caret line="222" column="11" selection-start-line="222" selection-start-column="11" selection-end-line="222" selection-end-column="11" />
-              <folding>
-                <element signature="e#7283#7284#0" expanded="true" />
-                <element signature="e#7354#7355#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tikv_code/key.rs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="950">
-              <caret line="54" column="41" selection-start-line="54" selection-start-column="41" selection-end-line="54" selection-end-column="41" />
-              <folding>
-                <element signature="e#1268#1269#0" expanded="true" />
-                <element signature="e#1299#1300#0" expanded="true" />
-                <element signature="e#1710#1711#0" expanded="true" />
-                <element signature="e#1732#1733#0" expanded="true" />
-                <element signature="e#1853#1854#0" expanded="true" />
-                <element signature="e#1874#1875#0" expanded="true" />
-                <element signature="e#2311#2312#0" expanded="true" />
-                <element signature="e#2355#2356#0" expanded="true" />
-                <element signature="e#6230#6231#0" expanded="true" />
-                <element signature="e#6270#6271#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/tikv_code/number.rs">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2660">
-              <caret line="146" column="32" selection-start-line="146" selection-start-column="32" selection-end-line="146" selection-end-column="32" />
+            <state relative-caret-position="133">
+              <caret line="7" column="75" selection-start-line="7" selection-start-column="75" selection-end-line="7" selection-end-column="75" />
             </state>
           </provider>
         </entry>
@@ -187,8 +174,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Cargo.toml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="258">
-              <caret line="25" column="26" selection-start-line="25" selection-start-column="26" selection-end-line="25" selection-end-column="26" />
+            <state relative-caret-position="83">
+              <caret line="26" column="43" selection-start-line="26" selection-start-column="43" selection-end-line="26" selection-end-column="43" />
             </state>
           </provider>
         </entry>
@@ -204,8 +191,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>let mut dur = crate</find>
-      <find>let mut db</find>
       <find>use url</find>
       <find>CF_DEFAULT</find>
       <find>serde</find>
@@ -234,6 +219,8 @@
       <find>let mut</find>
       <find>TempDir</find>
       <find>black_box</find>
+      <find>scan_batch_size</find>
+      <find>black_box(</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -260,10 +247,12 @@
         <option value="$PROJECT_DIR$/src/bin/profiler.rs" />
         <option value="$PROJECT_DIR$/src/db_opts.rs" />
         <option value="$PROJECT_DIR$/src/lib.rs" />
-        <option value="$PROJECT_DIR$/Cargo.toml" />
         <option value="$PROJECT_DIR$/benches/profile.rs" />
-        <option value="$PROJECT_DIR$/src/bin/profile.rs" />
         <option value="$PROJECT_DIR$/benches/benchmark.rs" />
+        <option value="$PROJECT_DIR$/components/profiler/Cargo.toml" />
+        <option value="$PROJECT_DIR$/components/profiler/src/lib.rs" />
+        <option value="$PROJECT_DIR$/Cargo.toml" />
+        <option value="$PROJECT_DIR$/src/bin/profile.rs" />
       </list>
     </option>
   </component>
@@ -297,7 +286,20 @@
             <path>
               <item name="nacs" type="b2602c69:ProjectViewProjectNode" />
               <item name="nacs" type="462c0819:PsiDirectoryNode" />
-              <item name="data" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="nacs" type="b2602c69:ProjectViewProjectNode" />
+              <item name="nacs" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="profiler" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="nacs" type="b2602c69:ProjectViewProjectNode" />
+              <item name="nacs" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="profiler" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="nacs" type="b2602c69:ProjectViewProjectNode" />
@@ -330,6 +332,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/components" />
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
@@ -399,7 +402,7 @@
       <workItem from="1565335022079" duration="3270000" />
       <workItem from="1565582804866" duration="1116000" />
       <workItem from="1565587101511" duration="2925000" />
-      <workItem from="1566277125814" duration="4903000" />
+      <workItem from="1566277125814" duration="9055000" />
     </task>
     <servers />
   </component>
@@ -415,11 +418,10 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="47450000" />
+    <option name="totallyTimeSpent" value="51602000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16809729" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -433,8 +435,8 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="9" visible="true" weight="0.3566265" />
-      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="9" sideWeight="0.49928468" visible="true" weight="0.33493975" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5007153" side_tool="true" weight="0.42891565" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -589,22 +591,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Cargo.toml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="258">
-          <caret line="25" column="26" selection-start-line="25" selection-start-column="26" selection-end-line="25" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/benches/profile.rs">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/bin/profile.rs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="8" column="18" selection-start-line="8" selection-start-column="18" selection-end-line="8" selection-end-column="18" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/db_opts.rs">
       <provider selected="true" editor-type-id="text-editor">
@@ -613,10 +601,50 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/components/profiler/Cargo.toml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="7" column="75" selection-start-line="7" selection-start-column="75" selection-end-line="7" selection-end-column="75" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/profiler/src/profiler_dummy.rs">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/profiler/src/profiler_unix.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-570" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Cargo.toml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="83">
+          <caret line="26" column="43" selection-start-line="26" selection-start-column="43" selection-end-line="26" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/profiler/src/lib.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="855">
+          <caret line="45" column="6" selection-start-line="45" selection-start-column="6" selection-end-line="45" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/benches/benchmark.rs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="222">
-          <caret line="42" column="8" selection-start-line="42" selection-start-column="8" selection-end-line="42" selection-end-column="11" />
+        <state relative-caret-position="267">
+          <caret line="136" column="79" selection-start-line="136" selection-start-column="39" selection-end-line="136" selection-end-column="79" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/bin/profile.rs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="473">
+          <caret line="136" column="37" selection-start-line="136" selection-start-column="37" selection-end-line="136" selection-end-column="37" />
+          <folding>
+            <element signature="e#3258#3259#0" expanded="true" />
+            <element signature="e#3277#3278#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
