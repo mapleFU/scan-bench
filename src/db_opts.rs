@@ -237,6 +237,7 @@ pub fn build_read_opts(lower_bound: Vec<u8>, upper_bound: Vec<u8>) -> ReadOption
     opts
 }
 
+#[allow(unused)]
 pub fn build_iter_opt() {
     unimplemented!()
 }
