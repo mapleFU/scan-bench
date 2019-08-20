@@ -110,9 +110,9 @@ fn bench_scan() {
             println!("预热开始");
             for _ in 0..50 {
                 let scanner = Scanner::new(cur_db.clone(), common_cfg.clone());
-                forward_scan(scanner, 10000);
+                forward_scan(scanner, rocks_size / 2);
                 let scanner = Scanner::new(cur_db.clone(), common_cfg.clone());
-                forward_batch_scan(scanner, 128, 10000);
+                forward_batch_scan(scanner, 128, rocks_size / 2);
             }
             println!("预热完毕");
             // value length of default value field.
