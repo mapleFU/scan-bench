@@ -50,22 +50,28 @@ pub fn forward_scan(mut scanner: Scanner, loop_cnt: u64) {
 }
 
 pub fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) {
+    let mut write_cache = Vec::new();
+
     for _ in 0..loop_cnt / batch_size {
         for _ in 0..batch_size {
             cursor_next_ok!(scanner.iter_write);
-            black_box_kv!(scanner.iter_write);
+            write_cache.extend_from_slice(scanner.iter_write.key());
+            write_cache.extend_from_slice(scanner.iter_write.value());
         }
 
         for _ in 0..batch_size {
             cursor_next_ok!(scanner.iter_default);
             black_box_kv!(scanner.iter_default);
         }
+        write_cache.clear();
     }
 
     let sz = loop_cnt % batch_size;
     for _ in 0..sz {
         cursor_next_ok!(scanner.iter_write);
-        black_box_kv!(scanner.iter_write);
+//        black_box_kv!(scanner.iter_write);
+        write_cache.extend_from_slice(scanner.iter_write.key());
+        write_cache.extend_from_slice(scanner.iter_write.value());
     }
 
     for _ in 0..sz {
@@ -82,7 +88,7 @@ fn bench_scan(c: &mut Criterion) {
     );
 
     //    let common_cfg = ScannerConfig::default();
-    let test_rocks_size: Vec<u64> = vec![20000, 100000, 500000];
+    let test_rocks_size: Vec<u64> = vec![20000, 100000];
     let allow_values = vec![
         ValueType::MiddleValue,
         ValueType::LongValue,
@@ -105,9 +111,9 @@ fn bench_scan(c: &mut Criterion) {
             println!("预热开始");
             for _ in 0..50 {
                 let scanner = Scanner::new(cur_db.clone(), common_cfg.clone());
-                forward_scan(scanner, 10000);
+                forward_scan(scanner, rocks_size / 2);
                 let scanner = Scanner::new(cur_db.clone(), common_cfg.clone());
-                forward_batch_scan(scanner, 128, 10000);
+                forward_batch_scan(scanner, 128, rocks_size / 2);
             }
             println!("预热完毕");
 
