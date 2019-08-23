@@ -1,4 +1,5 @@
 #![feature(repeat_generic_slice)]
+#![feature(test)]
 
 extern crate rocksdb;
 
@@ -20,6 +21,8 @@ extern crate rand;
 #[allow(unused)]
 #[macro_use]
 extern crate slog;
+
+extern crate test;
 
 mod db_opts;
 mod tikv_code;
@@ -137,4 +140,51 @@ impl Scanner {
             cfg,
         }
     }
+}
+
+use test::black_box;
+
+pub fn forward_scan(mut scanner: Scanner, loop_cnt: u64) {
+    for _ in 0..loop_cnt {
+        // fetch next for "write" field
+        scanner.iter_write.next();
+        black_box((scanner.iter_write.key(), scanner.iter_write.value()));
+
+        // fetch next for "default" field
+        scanner.iter_default.next();
+        black_box((scanner.iter_default.key(), scanner.iter_default.value()));
+    }
+}
+
+pub fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) {
+    let mut write_cache = Vec::with_capacity(1024 * 1024 * 100);
+
+    for _ in 0..loop_cnt / batch_size {
+        for _ in 0..batch_size {
+            scanner.iter_write.next();
+            write_cache.extend_from_slice(scanner.iter_write.key());
+            write_cache.extend_from_slice(scanner.iter_write.value());
+        }
+
+        for _ in 0..batch_size {
+            scanner.iter_default.next();
+            black_box(scanner.iter_default.key());
+            write_cache.extend_from_slice(scanner.iter_default.value());
+        }
+        write_cache.clear();
+    }
+
+    let sz = loop_cnt % batch_size;
+    for _ in 0..sz {
+        scanner.iter_write.next();
+        write_cache.extend_from_slice(scanner.iter_write.key());
+        write_cache.extend_from_slice(scanner.iter_write.value());
+    }
+
+    for _ in 0..sz {
+        scanner.iter_default.next();
+        black_box(scanner.iter_default.key());
+        write_cache.extend_from_slice(scanner.iter_default.value());
+    }
+    write_cache.clear();
 }

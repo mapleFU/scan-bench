@@ -21,67 +21,7 @@ use nacs::{
     DIST_QT3_KEY,
 };
 
-macro_rules! black_box_kv {
-    ($name:expr) => {
-        {
-            black_box(($name.key(), $name.value()))
-        }
-    };
-}
-
-macro_rules! cursor_next_ok {
-    ($name:expr) => {
-        {
-            !$name.next()
-        }
-    };
-}
-
-pub fn forward_scan(mut scanner: Scanner, loop_cnt: u64) {
-    for _ in 0..loop_cnt {
-        // fetch next for "write" field
-        cursor_next_ok!(scanner.iter_write);
-        black_box_kv!(scanner.iter_write);
-
-        // fetch next for "default" field
-        cursor_next_ok!(scanner.iter_default);
-        black_box_kv!(scanner.iter_default);
-    }
-}
-
-pub fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) {
-    let mut write_cache = Vec::with_capacity(1024 * 100);
-
-    for _ in 0..loop_cnt / batch_size {
-        for _ in 0..batch_size {
-            cursor_next_ok!(scanner.iter_write);
-            write_cache.extend_from_slice(scanner.iter_write.key());
-            write_cache.extend_from_slice(scanner.iter_write.value());
-        }
-
-        for _ in 0..batch_size {
-            cursor_next_ok!(scanner.iter_default);
-            black_box(scanner.iter_default.key());
-            write_cache.extend_from_slice(scanner.iter_default.value());
-        }
-        write_cache.clear();
-    }
-
-    let sz = loop_cnt % batch_size;
-    for _ in 0..sz {
-        cursor_next_ok!(scanner.iter_write);
-//        black_box_kv!(scanner.iter_write);
-        write_cache.extend_from_slice(scanner.iter_write.key());
-        write_cache.extend_from_slice(scanner.iter_write.value());
-    }
-
-    for _ in 0..sz {
-        cursor_next_ok!(scanner.iter_default);
-        black_box(scanner.iter_default.key());
-        write_cache.extend_from_slice(scanner.iter_default.value());
-    }
-    write_cache.clear();
-}
+use nacs::{forward_scan, forward_batch_scan};
 
 fn bench_scan(c: &mut Criterion) {
     // handle config here

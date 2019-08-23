@@ -2,3 +2,6 @@
 **/*.rs.bk
 
 data/*
+
+**/*.profile
+**/callgrind*
