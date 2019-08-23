@@ -156,9 +156,12 @@ pub fn forward_scan(mut scanner: Scanner, loop_cnt: u64) {
     }
 }
 
-pub fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) {
-    let mut write_cache = Vec::with_capacity(1024 * 1024 * 100);
-
+pub fn forward_batch_scan(
+    mut scanner: Scanner,
+    batch_size: u64,
+    loop_cnt: u64,
+    mut write_cache: &mut Vec<u8>,
+) {
     for _ in 0..loop_cnt / batch_size {
         for _ in 0..batch_size {
             scanner.iter_write.next();

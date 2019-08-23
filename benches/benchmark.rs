@@ -21,7 +21,9 @@ use nacs::{
     DIST_QT3_KEY,
 };
 
-use nacs::{forward_scan, forward_batch_scan};
+use nacs::{forward_batch_scan, forward_scan};
+use std::rc::Rc;
+use std::cell::RefCell;
 
 fn bench_scan(c: &mut Criterion) {
     // handle config here
@@ -38,9 +40,11 @@ fn bench_scan(c: &mut Criterion) {
         ValueType::LongLongValue,
     ];
 
+    let mut common_write_vec = Vec::with_capacity(100 * 1024 * 1024);
+    let mut common_write_vec = Rc::new(RefCell::new(common_write_vec));
+
     for rocks_size in test_rocks_size {
         for defaultcf_value_length in &allow_values {
-
             let temp_dir = TempDir::new_in("data", "data").unwrap();
             println!("{:?}", temp_dir.path());
             let mut db = default_test_db_with_path(temp_dir.path());
@@ -50,17 +54,19 @@ fn bench_scan(c: &mut Criterion) {
             let cfg = common_cfg.clone();
             let batch_size = BatchSize::SmallInput;
 
+
             // 预热
             println!("预热开始");
             for _ in 0..50 {
                 let scanner = Scanner::new(cur_db.clone(), common_cfg.clone());
                 forward_scan(scanner, rocks_size / 2);
                 let scanner = Scanner::new(cur_db.clone(), common_cfg.clone());
-                forward_batch_scan(scanner, 128, rocks_size / 2);
+                forward_batch_scan(scanner, 128, rocks_size / 2, &mut (*common_write_vec).borrow_mut());
             }
             println!("预热完毕");
 
             let vl = defaultcf_value_length.value();
+
 
             let c = c.bench_function(
                 &format!(
@@ -81,6 +87,7 @@ fn bench_scan(c: &mut Criterion) {
             let cur_db = db.clone();
             let cfg = common_cfg.clone();
 
+            let cur_write_vec = common_write_vec.clone();
             c.bench_function_over_inputs(
                 &format!(
                     "forward_batch_scan(rocks db data size {}, value length {})",
@@ -88,9 +95,14 @@ fn bench_scan(c: &mut Criterion) {
                 ),
                 move |b, &cnt| {
                     b.iter_batched(
-                        || Scanner::new(cur_db.clone(), cfg.clone()),
-                        |scanner| {
-                            forward_batch_scan(scanner, black_box(cnt), black_box(rocks_size / 2))
+                        || (Scanner::new(cur_db.clone(), cfg.clone()), cur_write_vec.clone()),
+                        |(scanner, mut v)| {
+                            forward_batch_scan(
+                                scanner,
+                                black_box(cnt),
+                                black_box(rocks_size / 2),
+                                &mut (*v).borrow_mut(),
+                            )
                         },
                         batch_size,
                     )
