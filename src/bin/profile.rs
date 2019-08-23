@@ -57,7 +57,7 @@ fn bench_scan() {
 
             // 预热
             println!("预热开始");
-            for _ in 0..50 {
+            for _ in 0..10 {
                 let scanner = Scanner::new(cur_db.clone(), common_cfg.clone());
                 forward_scan(scanner, rocks_size / 2);
                 let scanner = Scanner::new(cur_db.clone(), common_cfg.clone());

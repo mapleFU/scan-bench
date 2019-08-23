@@ -36,9 +36,11 @@ pub fn start(name: impl AsRef<str>) -> bool {
 
     if valgrind_request::running_on_valgrind() != 0 {
         *profiler = Profiler::CallGrind;
+        println!("Callgrind start record");
         CallgrindClientRequest::start();
     } else {
         *profiler = Profiler::GPerfTools;
+        println!("GPerfTools start record");
         cpuprofiler::PROFILER
             .lock()
             .unwrap()
@@ -61,11 +63,13 @@ pub fn stop() -> bool {
         Profiler::CallGrind => {
             CallgrindClientRequest::stop(None);
             *profiler = Profiler::None;
+            println!("Callgrind stop record");
             true
         }
         Profiler::GPerfTools => {
             cpuprofiler::PROFILER.lock().unwrap().stop().unwrap();
             *profiler = Profiler::None;
+            println!("GPerftool stop record");
             true
         }
     }
