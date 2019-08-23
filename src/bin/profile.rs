@@ -55,7 +55,7 @@ pub fn forward_scan(mut scanner: Scanner, loop_cnt: u64) {
 }
 
 pub fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) {
-    let mut write_cache = Vec::new();
+    let mut write_cache = Vec::with_capacity(1024 * 100);
 
     for _ in 0..loop_cnt / batch_size {
         for _ in 0..batch_size {
@@ -66,7 +66,8 @@ pub fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) 
 
         for _ in 0..batch_size {
             cursor_next_ok!(scanner.iter_default);
-            black_box_kv!(scanner.iter_default);
+            black_box(scanner.iter_default.key());
+            write_cache.extend_from_slice(scanner.iter_default.value());
         }
         write_cache.clear();
     }
@@ -81,8 +82,10 @@ pub fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) 
 
     for _ in 0..sz {
         cursor_next_ok!(scanner.iter_default);
-        black_box_kv!(scanner.iter_default);
+        black_box(scanner.iter_default.key());
+        write_cache.extend_from_slice(scanner.iter_default.value());
     }
+    write_cache.clear();
 }
 
 fn bench_scan() {
@@ -135,7 +138,7 @@ fn bench_scan() {
 
             profiler::start(&scanner_forward_name);
             forward_scan(scanner_forward, black_box(rocks_size / 2));
-            profiler::stop();
+            assert!(profiler::stop());
 
             let scanner_forward_batch_name = format!("forward_scan_batch") + &scale;
             for sbc in scan_batch_size {
@@ -145,7 +148,7 @@ fn bench_scan() {
                 println!("start_task name {}", name);
                 profiler::start(&name);
                 forward_batch_scan(scanner_forward, black_box(sbc), black_box(rocks_size / 2));
-                profiler::stop();
+                assert!(profiler::stop());
             }
 
         }

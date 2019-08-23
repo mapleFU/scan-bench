@@ -50,7 +50,7 @@ pub fn forward_scan(mut scanner: Scanner, loop_cnt: u64) {
 }
 
 pub fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) {
-    let mut write_cache = Vec::new();
+    let mut write_cache = Vec::with_capacity(1024 * 100);
 
     for _ in 0..loop_cnt / batch_size {
         for _ in 0..batch_size {
@@ -61,7 +61,8 @@ pub fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) 
 
         for _ in 0..batch_size {
             cursor_next_ok!(scanner.iter_default);
-            black_box_kv!(scanner.iter_default);
+            black_box(scanner.iter_default.key());
+            write_cache.extend_from_slice(scanner.iter_default.value());
         }
         write_cache.clear();
     }
@@ -76,8 +77,10 @@ pub fn forward_batch_scan(mut scanner: Scanner, batch_size: u64, loop_cnt: u64) 
 
     for _ in 0..sz {
         cursor_next_ok!(scanner.iter_default);
-        black_box_kv!(scanner.iter_default);
+        black_box(scanner.iter_default.key());
+        write_cache.extend_from_slice(scanner.iter_default.value());
     }
+    write_cache.clear();
 }
 
 fn bench_scan(c: &mut Criterion) {
